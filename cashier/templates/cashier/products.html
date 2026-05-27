@@ -1,0 +1,61 @@
+{% extends 'cashier/base.html' %}
+{% block title %}المنتجات | VetCash Pro{% endblock %}
+{% block page_title %}المنتجات{% endblock %}
+{% block page_subtitle %}إضافة وإدارة عناصر المخزون{% endblock %}
+{% block topbar_badge %}<i class="bi bi-box-seam"></i><span>المخزون</span>{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="panel">
+      <h4 class="panel-title mb-3">إضافة منتج</h4>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3"><label class="form-label">اسم المنتج</label>{{ form.name }}</div>
+        <div class="mb-3"><label class="form-label">التصنيف</label>{{ form.category }}</div>
+        <div class="mb-3"><label class="form-label">الباركود</label>{{ form.barcode }}</div>
+        <div class="row">
+          <div class="col-6 mb-3"><label class="form-label">سعر الشراء</label>{{ form.purchase_price }}</div>
+          <div class="col-6 mb-3"><label class="form-label">سعر البيع</label>{{ form.sale_price }}</div>
+        </div>
+        <div class="mb-3"><label class="form-label">الكمية</label>{{ form.quantity }}</div>
+        <div class="mb-3"><label class="form-label">تاريخ الانتهاء</label>{{ form.expiry_date }}</div>
+        <button class="btn btn-primary w-100" type="submit"><i class="bi bi-plus-circle me-1"></i> حفظ المنتج</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="panel">
+      <div class="panel-header">
+        <div><h4 class="panel-title">قائمة المنتجات</h4><p class="panel-subtitle">المخزون الحالي</p></div>
+        <button class="btn btn-outline-primary" onclick="window.print()"><i class="bi bi-download"></i> تصدير</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead><tr><th>المنتج</th><th>شراء</th><th>بيع</th><th>الكمية</th><th>الحالة</th><th>إجراء</th></tr></thead>
+          <tbody>
+          {% for product in products %}
+            <tr>
+              <td><strong>{{ product.name }}</strong><br><small class="text-muted">{{ product.get_category_display }}</small></td>
+              <td>{{ product.purchase_price }}</td>
+              <td>{{ product.sale_price }}</td>
+              <td>{{ product.quantity }}</td>
+              <td>{% if product.is_low_stock %}<span class="badge-soft soft-red">منخفض</span>{% else %}<span class="badge-soft soft-green">متوفر</span>{% endif %}</td>
+              <td>
+                <form method="post" action="{% url 'cashier:delete_product' product.id %}" onsubmit="return confirm('هل تريد حذف المنتج؟')">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-danger" type="submit">حذف</button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6"><div class="empty-state"><i class="bi bi-box"></i><p>لا توجد منتجات. أضف أول منتج من النموذج.</p></div></td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

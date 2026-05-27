@@ -1,0 +1,54 @@
+{% extends 'cashier/base.html' %}
+{% block title %}التقارير | VetCash Pro{% endblock %}
+{% block page_title %}التقارير{% endblock %}
+{% block page_subtitle %}تقارير المبيعات والأرباح والمخزون{% endblock %}
+{% block topbar_badge %}<i class="bi bi-calendar3"></i><span>اليوم</span>{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-4"><div class="stat-card"><div class="stat-icon bg-primary-grad"><i class="bi bi-currency-dollar"></i></div><h3>{{ monthly_sales }} JD</h3><p>مبيعات الشهر</p></div></div>
+  <div class="col-md-4"><div class="stat-card"><div class="stat-icon bg-green-grad"><i class="bi bi-wallet2"></i></div><h3>{{ monthly_profit }} JD</h3><p>ربح الشهر</p></div></div>
+  <div class="col-md-4"><div class="stat-card"><div class="stat-icon bg-orange-grad"><i class="bi bi-bag-check"></i></div><h3>{{ monthly_items }}</h3><p>عناصر مباعة</p></div></div>
+</div>
+
+<div class="panel mb-4">
+  <div class="panel-header"><div><h4 class="panel-title">فلترة التقارير</h4><p class="panel-subtitle">حدد الفترة الزمنية</p></div></div>
+  <form method="get" class="row g-3">
+    <div class="col-md-4"><input type="date" name="start_date" value="{{ start_date }}" class="form-control"></div>
+    <div class="col-md-4"><input type="date" name="end_date" value="{{ end_date }}" class="form-control"></div>
+    <div class="col-md-4"><button class="btn btn-primary w-100" type="submit">إنشاء التقرير</button></div>
+  </form>
+</div>
+
+<div class="panel mb-4">
+  <div class="panel-header"><div><h4 class="panel-title">أكثر المنتجات مبيعًا</h4><p class="panel-subtitle">أفضل أداء حسب الكمية</p></div></div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>المنتج</th><th>الكمية المباعة</th><th>المبيعات</th><th>الربح</th></tr></thead>
+      <tbody>
+      {% for item in top_products %}
+        <tr><td><strong>{{ item.product_name }}</strong></td><td>{{ item.sold_qty }}</td><td>{{ item.sales_total }} JD</td><td>{{ item.profit_total }} JD</td></tr>
+      {% empty %}
+        <tr><td colspan="4"><div class="empty-state"><i class="bi bi-bar-chart"></i><p>لا توجد بيانات مبيعات بعد</p></div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header"><div><h4 class="panel-title">الفواتير</h4><p class="panel-subtitle">آخر الفواتير حسب الفلتر</p></div></div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>رقم الفاتورة</th><th>التاريخ</th><th>الإجمالي</th><th>الربح</th></tr></thead>
+      <tbody>
+      {% for sale in sales %}
+        <tr><td>#{{ sale.id }}</td><td>{{ sale.created_at|date:'Y-m-d H:i' }}</td><td>{{ sale.total }} JD</td><td>{{ sale.profit }} JD</td></tr>
+      {% empty %}
+        <tr><td colspan="4"><div class="empty-state"><p>لا توجد فواتير ضمن الفترة المحددة</p></div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

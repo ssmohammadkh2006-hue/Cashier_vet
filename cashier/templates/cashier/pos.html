@@ -1,0 +1,46 @@
+{% extends 'cashier/base.html' %}
+{% block title %}الكاشير | VetCash Pro{% endblock %}
+{% block page_title %}الكاشير{% endblock %}
+{% block page_subtitle %}ابحث عن المنتجات وأكمل عمليات البيع{% endblock %}
+{% block topbar_badge %}<i class="bi bi-receipt"></i><span>فاتورة جديدة</span>{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="panel">
+      <div class="panel-header"><div><h4 class="panel-title">المنتجات</h4><p class="panel-subtitle">اضغط على المنتج لإضافته إلى السلة</p></div></div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-8"><input class="form-control" id="productSearch" placeholder="ابحث بالاسم أو الباركود..."></div>
+        <div class="col-md-4">
+          <select class="form-select" id="categoryFilter">
+            <option value="">كل التصنيفات</option>
+            <option value="food">طعام</option>
+            <option value="medicine">أدوية</option>
+            <option value="care">عناية</option>
+            <option value="service">خدمة</option>
+            <option value="other">أخرى</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row g-3" id="productGrid"></div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="panel cart-box">
+      <div class="panel-header"><div><h4 class="panel-title">السلة الحالية</h4><p class="panel-subtitle">عناصر الفاتورة</p></div></div>
+      <div id="cartItems"></div>
+      <div class="cart-total">
+        <div class="total-line"><span>المجموع الفرعي</span><strong id="cartSubtotal">0.00 JD</strong></div>
+        <div class="total-line"><span>الخصم</span><input id="discountInput" class="form-control form-control-sm discount-input" type="number" value="0" min="0" step="0.01"></div>
+        <hr>
+        <div class="total-line"><span class="grand-total">الإجمالي</span><strong class="grand-total" id="cartTotal">0.00 JD</strong></div>
+      </div>
+      <button class="btn btn-success w-100 mt-3" onclick="completeSale()"><i class="bi bi-check-circle me-1"></i> إتمام البيع</button>
+      <button class="btn btn-outline-primary w-100 mt-2" onclick="window.print()"><i class="bi bi-printer me-1"></i> طباعة الفاتورة</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

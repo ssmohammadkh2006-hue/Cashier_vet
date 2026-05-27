@@ -1,0 +1,44 @@
+{% extends 'cashier/base.html' %}
+{% block title %}لوحة التحكم | VetCash Pro{% endblock %}
+{% block page_title %}لوحة التحكم{% endblock %}
+{% block page_subtitle %}نظرة عامة على المبيعات والمخزون والتنبيهات{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-6 col-xl-3"><div class="stat-card"><div class="stat-icon bg-primary-grad"><i class="bi bi-cash-stack"></i></div><h3>{{ today_sales_total }} JD</h3><p>مبيعات اليوم</p></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card"><div class="stat-icon bg-green-grad"><i class="bi bi-graph-up-arrow"></i></div><h3>{{ today_profit_total }} JD</h3><p>ربح اليوم</p></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card"><div class="stat-icon bg-orange-grad"><i class="bi bi-box-seam"></i></div><h3>{{ products_count }}</h3><p>عدد المنتجات</p></div></div>
+  <div class="col-md-6 col-xl-3"><div class="stat-card"><div class="stat-icon bg-red-grad"><i class="bi bi-exclamation-triangle"></i></div><h3>{{ low_stock_count }}</h3><p>مخزون منخفض</p></div></div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="panel">
+      <div class="panel-header"><div><h4 class="panel-title">آخر المبيعات</h4><p class="panel-subtitle">آخر عمليات الكاشير</p></div></div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead><tr><th>الفاتورة</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+          <tbody>
+          {% for sale in recent_sales %}
+            <tr><td>#{{ sale.id }}</td><td>{{ sale.created_at|date:'Y-m-d H:i' }}</td><td>{{ sale.total }} JD</td><td><span class="badge-soft soft-green">مدفوعة</span></td></tr>
+          {% empty %}
+            <tr><td colspan="4"><div class="empty-state"><i class="bi bi-receipt"></i><p>لا توجد مبيعات حتى الآن</p></div></td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel">
+      <h4 class="panel-title mb-3">تنبيهات المخزون</h4>
+      {% for product in low_stock_products %}
+        <div class="d-flex justify-content-between border-bottom py-3"><strong>{{ product.name }}</strong><span class="badge-soft soft-red">متبقي {{ product.quantity }}</span></div>
+      {% empty %}
+        <div class="empty-state"><i class="bi bi-check-circle"></i><p>لا توجد منتجات منخفضة</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

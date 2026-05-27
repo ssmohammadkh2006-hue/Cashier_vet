@@ -1,0 +1,77 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}VetCash Pro{% endblock %}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{% static 'cashier/css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+<div class="app-shell">
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-heart-pulse"></i></div>
+      <div>
+        <h1><a href="{% url 'cashier:dashboard' %}"> Cashier Pet Pro</a> </h1>
+        <span>نظام كاشير للعيادات البيطرية</span>
+      </div>
+    </div>
+
+    <div class="nav-title">القائمة الرئيسية</div>
+
+    <a href="{% url 'cashier:dashboard' %}" class="nav-link-custom {% if active_page == 'dashboard' %}active{% endif %}">
+      <i class="bi bi-grid-1x2-fill"></i> لوحة التحكم
+    </a>
+    <a href="{% url 'cashier:pos' %}" class="nav-link-custom {% if active_page == 'pos' %}active{% endif %}">
+      <i class="bi bi-cart-check-fill"></i> الكاشير
+    </a>
+    <a href="{% url 'cashier:products' %}" class="nav-link-custom {% if active_page == 'products' %}active{% endif %}">
+      <i class="bi bi-box-seam-fill"></i> المنتجات
+    </a>
+    <a href="{% url 'cashier:reports' %}" class="nav-link-custom {% if active_page == 'reports' %}active{% endif %}">
+      <i class="bi bi-bar-chart-fill"></i> التقارير
+    </a>
+
+    <div class="sidebar-footer">
+      <strong>Cashier Pet Pro</strong><br>
+      واجهة كاشير بسيطة وسريعة واحترافية.
+    </div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <div class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button class="menu-btn" id="toggleSidebar" type="button"><i class="bi bi-list"></i></button>
+        <div class="page-title">
+          <h2>{% block page_title %}{% endblock %}</h2>
+          <p>{% block page_subtitle %}{% endblock %}</p>
+        </div>
+      </div>
+      <div class="user-pill">
+        {% block topbar_badge %}<i class="bi bi-person-circle"></i><span>المدير</span>{% endblock %}
+      </div>
+    </div>
+
+    <section class="content-area">
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+</div>
+
+<script>
+  window.VETCASH_URLS = {
+    productsApi: "{% url 'cashier:products_api' %}",
+    completeSaleApi: "{% url 'cashier:complete_sale_api' %}"
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'cashier/js/app.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
