@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django.db import models
 from django.utils import timezone
-
+from django.core.validators import MinValueValidator
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -70,3 +70,102 @@ class SaleItem(models.Model):
         self.line_total = Decimal(self.quantity) * self.unit_price
         self.line_profit = Decimal(self.quantity) * (self.unit_price - self.unit_cost)
         super().save(*args, **kwargs)
+
+
+
+
+
+
+
+class Boarding(models.Model):
+    PET_TYPES = (
+        ('cat', 'قط'),
+        ('dog', 'كلب'),
+    )
+
+    TREATMENT_TYPES = (
+        ('with_treatment', 'مع علاج'),
+        ('without_treatment', 'بدون علاج'),
+    )
+
+    STATUS_TYPES = (
+        ('inside', 'داخل العيادة'),
+        ('checked_out', 'تم الخروج'),
+    )
+
+    owner_name = models.CharField(max_length=200, verbose_name='اسم صاحب الحيوان')
+    phone = models.CharField(max_length=100, verbose_name='رقم الهاتف')
+
+    pet_name = models.CharField(max_length=200, verbose_name='اسم الحيوان')
+    pet_type = models.CharField(max_length=30, choices=PET_TYPES, verbose_name='نوع الحيوان')
+
+    treatment_type = models.CharField(
+        max_length=30,
+        choices=TREATMENT_TYPES,
+        default='without_treatment',
+        verbose_name='العلاج'
+    )
+
+    check_in = models.DateTimeField(default=timezone.now, verbose_name='وقت الدخول')
+    check_out = models.DateTimeField(blank=True, null=True, verbose_name='وقت الخروج')
+
+    daily_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal('0'))],
+        verbose_name='سعر المبيت اليومي'
+    )
+
+    treatment_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(Decimal('0'))],
+        verbose_name='سعر العلاج'
+    )
+
+    total_days = models.PositiveIntegerField(default=1, verbose_name='عدد الأيام')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='المبلغ النهائي')
+
+    status = models.CharField(max_length=30, choices=STATUS_TYPES, default='inside', verbose_name='الحالة')
+    notes = models.TextField(blank=True, verbose_name='ملاحظات')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def calculate_days(self):
+        end_time = self.check_out or timezone.now()
+        diff = end_time - self.check_in
+
+        days = diff.days
+        seconds = diff.seconds
+
+        if days <= 0:
+            return 1
+
+        if seconds > 0:
+            days += 1
+
+        return max(days, 1)
+
+    def calculate_total(self):
+        days = self.calculate_days()
+        total = Decimal(days) * self.daily_price
+
+        if self.treatment_type == 'with_treatment':
+            total += self.treatment_price
+
+        return days, total
+
+    def checkout(self):
+        self.check_out = timezone.now()
+        self.status = 'checked_out'
+        self.total_days, self.total_amount = self.calculate_total()
+        self.save()
+
+    def save(self, *args, **kwargs):
+        self.total_days, self.total_amount = self.calculate_total()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.pet_name} - {self.owner_name}'

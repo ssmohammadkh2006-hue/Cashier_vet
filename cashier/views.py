@@ -6,12 +6,91 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from .forms import ProductForm
-from .models import Product, Sale, SaleItem
+from .forms import ProductForm, BoardingForm
+from .models import Product, Sale, SaleItem, Boarding
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
+
+ 
+ 
+ 
+
+
 LOW_STOCK_LIMIT = 5
+
+
+
+
+ 
+
+
+@login_required
+def boarding(request):
+
+    form = BoardingForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('cashier:boarding')
+
+    boardings = Boarding.objects.all().order_by('-created_at')
+
+    inside_boardings = boardings.filter(
+        status='inside'
+    )
+
+    checked_out_boardings = boardings.filter(
+        status='checked_out'
+    )[:20]
+
+    total_boarding_income = (
+        Boarding.objects.filter(
+            status='checked_out'
+        ).aggregate(
+            total=Sum('total_amount')
+        )['total'] or 0
+    )
+
+    total_inside = inside_boardings.count()
+
+    total_checked_out = Boarding.objects.filter(
+        status='checked_out'
+    ).count()
+
+    context = {
+        'active_page': 'boarding',
+
+        'form': form,
+
+        'inside_boardings': inside_boardings,
+
+        'checked_out_boardings': checked_out_boardings,
+
+        'total_boarding_income': total_boarding_income,
+
+        'total_inside': total_inside,
+
+        'total_checked_out': total_checked_out,
+    }
+
+    return render(request,'cashier/boarding.html',context)
+
+
+@require_POST
+@login_required
+def boarding_checkout(request, pk):
+    boarding_item = get_object_or_404(Boarding, pk=pk, status='inside')
+    boarding_item.checkout()
+    return redirect('cashier:boarding')
+
+
+@require_POST
+@login_required
+def delete_boarding(request, pk):
+    boarding_item = get_object_or_404(Boarding, pk=pk)
+    boarding_item.delete()
+    return redirect('cashier:boarding')
 
 def login_view(request):
     if request.user.is_authenticated:

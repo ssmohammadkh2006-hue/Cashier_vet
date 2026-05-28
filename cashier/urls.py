@@ -5,6 +5,10 @@ app_name = 'cashier'
 
 urlpatterns = [
     
+    path('boarding/', views.boarding, name='boarding'),
+    path('boarding/<int:pk>/checkout/', views.boarding_checkout, name='boarding_checkout'),
+    path('boarding/<int:pk>/delete/', views.delete_boarding, name='delete_boarding'),
+    
     path('', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     

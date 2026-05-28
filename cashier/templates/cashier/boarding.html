@@ -1,0 +1,226 @@
+{% extends 'cashier/base.html' %}
+{% block title %}مبيت الحيوانات | VetCash Pro{% endblock %}
+{% block page_title %}مبيت الحيوانات{% endblock %}
+{% block page_subtitle %}إدارة دخول وخروج القطط والكلاب وحساب تكلفة المبيت والعلاج{% endblock %}
+
+{% block content %}
+
+<section class="content-area">
+
+  <div class="row g-4">
+
+    <div class="col-xl-4">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h4 class="panel-title">إضافة حيوان للمبيت</h4>
+            <p class="panel-subtitle">وقت الدخول يتم تسجيله تلقائيًا</p>
+          </div>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">اسم صاحب الحيوان</label>
+            {{ form.owner_name }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">رقم الهاتف</label>
+            {{ form.phone }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">اسم الحيوان</label>
+            {{ form.pet_name }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">نوع الحيوان</label>
+            {{ form.pet_type }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">العلاج</label>
+            {{ form.treatment_type }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">سعر المبيت اليومي</label>
+            {{ form.daily_price }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">سعر العلاج</label>
+            {{ form.treatment_price }}
+            <small class="text-muted">إذا بدون علاج اتركها 0</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">ملاحظات</label>
+            {{ form.notes }}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-plus-circle ms-1"></i>
+            حفظ الدخول
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-xl-8">
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-icon bg-primary-grad">
+              <i class="bi bi-house-heart"></i>
+            </div>
+            <h3>{{ inside_boardings.count }}</h3>
+            <p>داخل العيادة</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-icon bg-green-grad">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <h3>{{ checked_out_boardings.count }}</h3>
+            <p>تم الخروج</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-icon bg-orange-grad">
+              <i class="bi bi-cash-stack"></i>
+            </div>
+            <h3>{{ total_boarding_income }} JD</h3>
+            <p>إجمالي أرباح المبيت</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel mb-4">
+        <div class="panel-header">
+          <div>
+            <h4 class="panel-title">الحيوانات الموجودة حاليًا</h4>
+            <p class="panel-subtitle">اضغط إخراج لحساب المدة والمبلغ النهائي</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>الحيوان</th>
+                <th>المالك</th>
+                <th>الهاتف</th>
+                <th>الدخول</th>
+                <th>العلاج</th>
+                <th>السعر اليومي</th>
+                <th>الإجراء</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for item in inside_boardings %}
+              <tr>
+                <td>
+                  <strong>{{ item.pet_name }}</strong><br>
+                  <small class="text-muted">{{ item.get_pet_type_display }}</small>
+                </td>
+                <td>{{ item.owner_name }}</td>
+                <td>{{ item.phone }}</td>
+                <td>{{ item.check_in|date:"Y-m-d h:i A" }}</td>
+                <td>{{ item.get_treatment_type_display }}</td>
+                <td>{{ item.daily_price }} JD</td>
+                <td>
+                  <form method="post" action="{% url 'cashier:boarding_checkout' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">
+                      <i class="bi bi-box-arrow-left ms-1"></i>
+                      إخراج
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7" class="text-center text-muted py-5">
+                  لا يوجد حيوانات داخل العيادة الآن
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h4 class="panel-title">سجل الخروج</h4>
+            <p class="panel-subtitle">آخر الحيوانات التي خرجت</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>الحيوان</th>
+                <th>المالك</th>
+                <th>الدخول</th>
+                <th>الخروج</th>
+                <th>الأيام</th>
+                <th>الإجمالي</th>
+                <th>حذف</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for item in checked_out_boardings %}
+              <tr>
+                <td>
+                  <strong>{{ item.pet_name }}</strong><br>
+                  <small class="text-muted">{{ item.get_pet_type_display }}</small>
+                </td>
+                <td>{{ item.owner_name }}</td>
+                <td>{{ item.check_in|date:"Y-m-d h:i A" }}</td>
+                <td>{{ item.check_out|date:"Y-m-d h:i A" }}</td>
+                <td>{{ item.total_days }}</td>
+                <td>
+                  <strong>{{ item.total_amount }} JD</strong>
+                </td>
+                <td>
+                  <form method="post" action="{% url 'cashier:delete_boarding' item.id %}" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger btn-sm">
+                      حذف
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7" class="text-center text-muted py-5">
+                  لا يوجد سجلات خروج بعد
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% endblock %}

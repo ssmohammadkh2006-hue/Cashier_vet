@@ -140,3 +140,34 @@ body{text-align:right}
 
 
 
+
+
+/* Boarding Page */
+.boarding-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.boarding-status.inside {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.boarding-status.out {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.panel .form-label {
+  font-weight: 800;
+  color: #334155;
+}
+
+.table small {
+  font-weight: 600;
+}
