@@ -71,3 +71,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'cashier:login'
 LOGIN_REDIRECT_URL = 'cashier:dashboard'
 LOGOUT_REDIRECT_URL = 'cashier:login'
+
+# تسجيل الخروج عند إغلاق المتصفح كامل
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# لا تمدد الجلسة مع كل طلب
+SESSION_SAVE_EVERY_REQUEST = False
+ 
