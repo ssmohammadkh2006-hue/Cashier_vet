@@ -153,8 +153,9 @@ def get_user_clinic(user):
 
 
 def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('cashier:dashboard')
+
+    if request.method == 'GET' and request.user.is_authenticated:
+        logout(request)
 
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
@@ -176,7 +177,6 @@ def login_view(request):
         })
 
     return render(request, 'cashier/login.html')
-
 
 def logout_view(request):
     logout(request)
