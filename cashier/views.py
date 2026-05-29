@@ -117,17 +117,7 @@ def staff_change_password(request, pk):
         'staff': staff,
     })
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
+ 
 @login_required
 def clinic_settings(request):
     clinic = get_user_clinic(request.user)
