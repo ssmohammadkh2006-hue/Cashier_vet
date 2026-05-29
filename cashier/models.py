@@ -2,6 +2,69 @@ from decimal import Decimal
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
+
+from django.contrib.auth.models import User
+
+ 
+ 
+
+
+ 
+class Clinic(models.Model):
+
+    owner = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='clinic'
+    )
+
+    name = models.CharField(
+        max_length=200,
+        default='عيادتي البيطرية'
+    )
+
+ 
+    phone = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    address = models.CharField(
+        max_length=255,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class ClinicStaff(models.Model):
+    clinic = models.ForeignKey(
+        Clinic,
+        on_delete=models.CASCADE,
+        related_name='staff_members'
+    )
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='staff_profile'
+    )
+
+    is_owner = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+ 
+
+
 
 class Product(models.Model):
     CATEGORY_CHOICES = [
@@ -12,6 +75,7 @@ class Product(models.Model):
         ('other', 'أخرى'),
     ]
     is_active = models.BooleanField(default=True)
+    clinic = models.ForeignKey('Clinic', on_delete=models.CASCADE,related_name='products', null=True,blank=True)
     
     name = models.CharField('اسم المنتج', max_length=200)
     category = models.CharField('التصنيف', max_length=30, choices=CATEGORY_CHOICES, default='other')
@@ -37,6 +101,9 @@ class Product(models.Model):
 
 
 class Sale(models.Model):
+    
+    clinic = models.ForeignKey('Clinic',on_delete=models.CASCADE, related_name='sales', null=True,blank=True)
+    
     created_at = models.DateTimeField('تاريخ البيع', default=timezone.now)
     subtotal = models.DecimalField('المجموع الفرعي', max_digits=10, decimal_places=2, default=0)
     discount = models.DecimalField('الخصم', max_digits=10, decimal_places=2, default=0)
@@ -72,12 +139,10 @@ class SaleItem(models.Model):
         super().save(*args, **kwargs)
 
 
-
-
-
-
-
 class Boarding(models.Model):
+    
+    clinic = models.ForeignKey('Clinic',on_delete=models.CASCADE,related_name='boardings',null=True,blank=True)
+    
     PET_TYPES = (
         ('cat', 'قط'),
         ('dog', 'كلب'),

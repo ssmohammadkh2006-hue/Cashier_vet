@@ -1,0 +1,50 @@
+{% extends 'cashier/base.html' %}
+
+{% block title %}إضافة موظف{% endblock %}
+{% block page_title %}إضافة موظف{% endblock %}
+{% block page_subtitle %}إنشاء اسم مستخدم وكلمة مرور لموظف جديد{% endblock %}
+
+{% block content %}
+
+<section class="content-area">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+
+      <div class="panel">
+        <h4 class="panel-title mb-4">بيانات الموظف</h4>
+
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">اسم الموظف</label>
+            <input type="text" name="full_name" class="form-control" placeholder="مثال: أحمد">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">اسم المستخدم</label>
+            <input type="text" name="username" class="form-control" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">كلمة المرور</label>
+            <input type="password" name="password" class="form-control" required>
+          </div>
+
+          <button class="btn btn-primary w-100">
+            حفظ الموظف
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

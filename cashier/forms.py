@@ -1,5 +1,27 @@
 from django import forms
-from .models import Product,Boarding
+from .models import Product,Boarding,Clinic
+ 
+
+class ClinicForm(forms.ModelForm):
+    class Meta:
+        model = Clinic
+        fields = ['name', 'phone', 'address']
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'اسم العيادة'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'رقم الهاتف'
+            }),
+            'address': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'العنوان'
+            }),
+        }
+
 
 
 class ProductForm(forms.ModelForm):
@@ -14,8 +36,7 @@ class ProductForm(forms.ModelForm):
             'sale_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0'}),
             'expiry_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-        }
-        
+        }        
 
 class BoardingForm(forms.ModelForm):
     class Meta:

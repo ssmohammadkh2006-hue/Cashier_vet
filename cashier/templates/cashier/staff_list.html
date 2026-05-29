@@ -1,0 +1,74 @@
+{% extends 'cashier/base.html' %}
+
+{% block title %}الموظفين{% endblock %}
+{% block page_title %}الموظفين{% endblock %}
+{% block page_subtitle %}إدارة حسابات الموظفين داخل العيادة{% endblock %}
+
+{% block content %}
+
+<section class="content-area">
+  <div class="panel">
+
+    <div class="panel-header">
+      <div>
+        <h4 class="panel-title">حسابات الموظفين</h4>
+        <p class="panel-subtitle">صاحب العيادة فقط يستطيع إضافة أو تعديل كلمات المرور</p>
+      </div>
+
+      <a href="{% url 'cashier:staff_create' %}" class="btn btn-primary">
+        إضافة موظف
+      </a>
+    </div>
+
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>اسم المستخدم</th>
+            <th>النوع</th>
+            <th>إجراء</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for staff in staff_members %}
+          <tr>
+            <td>{{ staff.user.first_name|default:"موظف" }}</td>
+            <td>{{ staff.user.username }}</td>
+            <td>
+              {% if staff.is_owner %}
+                صاحب العيادة
+              {% else %}
+                موظف
+              {% endif %}
+            </td>
+            <td>
+              {% if not staff.is_owner %}
+              <a href="{% url 'cashier:staff_change_password' staff.id %}" class="btn btn-sm btn-outline-primary">
+                تغيير كلمة المرور
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-muted py-4">
+              لا يوجد موظفون بعد
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

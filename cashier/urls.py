@@ -5,6 +5,12 @@ app_name = 'cashier'
 
 urlpatterns = [
     
+    path('staff/', views.staff_list, name='staff_list'),
+    path('staff/add/', views.staff_create, name='staff_create'),
+    path('staff/<int:pk>/password/', views.staff_change_password, name='staff_change_password'),
+    
+    path('settings/', views.clinic_settings, name='clinic_settings'),
+    
     path('boarding/', views.boarding, name='boarding'),
     path('boarding/<int:pk>/checkout/', views.boarding_checkout, name='boarding_checkout'),
     path('boarding/<int:pk>/delete/', views.delete_boarding, name='delete_boarding'),
