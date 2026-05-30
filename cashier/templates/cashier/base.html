@@ -18,13 +18,9 @@
     <div class="brand">
       <div class="brand-icon"><i class="bi bi-heart-pulse"></i></div>
       <div>
-    <h1>
-        {% if request.user.is_authenticated %}
-            {{ request.user.clinic.name }}
-        {% else %}
-            Cashier Pet Pro
-        {% endif %}
-    </h1>
+   <h1>
+    {{ clinic.name|default:"Cashier Pro" }}
+</h1>
 
     <span>نظام كاشير للعيادات البيطرية</span>
 </div>
