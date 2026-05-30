@@ -135,12 +135,20 @@ def clinic_settings(request):
     })
 
 def get_user_clinic(user):
+
+    # إذا المستخدم موظف
+    if hasattr(user, 'staff_profile'):
+        return user.staff_profile.clinic
+
+    # إذا صاحب العيادة
     clinic, created = Clinic.objects.get_or_create(
         owner=user,
-        defaults={'name': 'عيادتي البيطرية'}
+        defaults={
+            'name': 'عيادتي البيطرية'
+        }
     )
-    return clinic
 
+    return clinic
 
 def login_view(request):
 
